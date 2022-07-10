@@ -2,9 +2,14 @@
   "name": "git-work-record",
   "version": "1.0.0",
   "description": "根据Git提交记录来写日报、周报等",
-  "main": "index.js",
+  "bin": {
+    "git-work-record": "./src/index.mjs",
+    "git-wr": "./src/index.mjs",
+    "git-rb": "./src/index.mjs",
+    "git-zb": "./src/index.mjs"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "release": "bumpp --commit --push --tag"
   },
   "keywords": [
     "Git",
@@ -16,5 +21,8 @@
   "dependencies": {
     "dayjs": "^1.11.3",
     "zx": "^7.0.7"
+  },
+  "devDependencies": {
+    "bumpp": "^8.2.1"
   }
 }
