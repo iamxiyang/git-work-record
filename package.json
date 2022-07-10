@@ -1,0 +1,20 @@
+{
+  "name": "git-work-record",
+  "version": "1.0.0",
+  "description": "根据Git提交记录来写日报、周报等",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Git",
+    "日报",
+    "周报"
+  ],
+  "author": "何喜阳",
+  "license": "MIT",
+  "dependencies": {
+    "dayjs": "^1.11.3",
+    "zx": "^7.0.7"
+  }
+}
