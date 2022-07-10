@@ -10,6 +10,7 @@ const allLog = {
 const GitProjects = await glob(['**/.git/HEAD'], {
   absolute: true,
   markDirectories: true,
+  deep: 3,
 })
 
 if (!GitProjects.length) {
