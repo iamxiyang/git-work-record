@@ -33,9 +33,9 @@ for (let p of GitProjects) {
       // 默认提交作者，TODO 根据传参指定作者
       const author = await $`git config user.name`
       // 查询提交记录
-      const plog = await $`git log --committer="${author}" --after="${startDay}" --before="${endDay}" --pretty=format:"${format}" --date=short --no-merges --reverse`
+      const plog = await $`git log --committer=${author} --after="${startDay}" --before="${endDay}" --pretty=format:${format} --date=short --no-merges --reverse`
       // 添加到日志
-      allLog[p] = plog.split('\n')
+      allLog[p] = plog
       // .map((line) => {
       //   const [date, hash, message] = line.split(' : ')
       //   return {
