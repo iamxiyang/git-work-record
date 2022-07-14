@@ -4,9 +4,8 @@ import yargs from 'yargs/yargs'
 import { hideBin } from 'yargs/helpers'
 import Print from 'one-line-print'
 import clipboard from 'clipboardy'
-import pug from 'pug'
-import { readFileSync } from 'fs'
-import { join } from 'path'
+import dayjs from 'dayjs'
+import updateNotifier from 'update-notifier'
 
 // 禁用zx自动打印的log
 $.verbose = false
@@ -28,7 +27,7 @@ const argv = yargs(hideBin(process.argv))
   .options('since', {
     alias: 'day',
     default: 1,
-    // 1days 表示展示1天前的提交历史，具体的时间取值，格式： ?days , ?weeks , ?years, 2016-11-25 ，
+    // 1days 表示展示1天前的提交历史，具体的时间取值，格式： ?days , ?weeks , ?years, 2016-11-25
     describe: '查询特定时间的提交记录，如果传递是是Number类型，会被当作days，其他的会直接传递给git log',
   })
   .options('style', {
@@ -58,9 +57,12 @@ const markdown = argv.markdown
 const copy = argv.copy
 const deep = argv.deep
 
-const projectsLog = {
-  // 项目名：[ { 时间，hash，提交信息 } ]
-}
+// 检测升级
+const pkg = await fs.readJson(path.dirname(argv.$0) + '/../package.json')
+updateNotifier({ pkg }).notify({ isGlobal: true })
+
+// 查询提交记录
+const projectsLogs = []
 
 // 查询当前目录及其子目录存在 .git 的目录
 const GitProjects = await glob(['**/.git/HEAD'], {
@@ -76,7 +78,7 @@ if (!GitProjects.length) {
   exit()
 }
 
-for (let i = 0, len = GitProjects.length; i < len - 1; i++) {
+for (let i = 0, len = GitProjects.length; i < len; i++) {
   const p = GitProjects[i]
   // 进入Git项目目录，执行Git命令
   try {
@@ -90,17 +92,20 @@ for (let i = 0, len = GitProjects.length; i < len - 1; i++) {
       const author = argv.author || (argv.committer ? '' : await $`git config user.name`).stdout.trim()
       const committer = argv.committer
       // 查询提交记录
-      // NOTE: _'_ 纯粹是因为我直接写双引号不行，所以写个字符后面再替换，方便解析成json，后面看怎么优化
-      const pLog = await $`git log --author="${author}" --committer="${committer}" --grep="${grep}" --since="${since}" --pretty=format:"{_'_text_'_:_'_%s_'_,_'_hash_'_:_'_%h_'_,_'_author_'_:_'_%an_'_,_'_timestamp_'_:%ct}" --date=short --reverse --all `
+      // 写成 _'_ 纯粹是因为我直接写双引号不行，所以写个字符后面再替换，方便解析成json，后面看怎么优化
+      const pLog = (await $`git log --grep=${grep} --since=${since} --author=${author} --committer=${committer} --pretty=format:"{_'_text_'_:_'_%s_'_,_'_hash_'_:_'_%h_'_,_'_author_'_:_'_%an_'_,_'_timestamp_'_:%ct}" `).stdout
       // 添加到日志
-      if (pLog.stdout) {
-        projectsLog[path] = pLog.stdout
-          .replace(/_'_/gm, '"')
-          .replace(/\$'({.+?})'/gm, '$1')
-          .split('\n')
-          .map((line) => {
-            return { ...JSON.parse(line), project: path }
-          })
+      const project = path.split('/').pop()
+      if (pLog) {
+        projectsLogs.push(
+          pLog
+            .replace(/_'_/gm, '"')
+            .replace(/\$'({.+?})'/gm, '$1')
+            .split('\n')
+            .map((line) => {
+              return { ...JSON.parse(line), project }
+            }),
+        )
       }
     })
   } catch (err) {
@@ -112,30 +117,60 @@ Print.line(`当前进度 100%，查询完成`)
 
 // 按项目、按时间进行合并，显示特定格式效果
 
-let allData = { ...projectsLog }
-
-if (style === 0 || style === 1) {
-  // 项目为主
-} else if (style === 2 || style === 3) {
-  // 日期为主，默认是项目为主的，因此转换成日期来分组的，交给模板引擎渲染
-  const dateLog = {}
-  for (const key in projectsLog) {
-    const data = projectsLog[key]
-    for (const item of data) {
-      const date = dayjs(item.timestamp).format('YYYY-MM-DD')
-      dateLog[date] = dateLog[date] || []
-      dateLog[date].push(item)
+const logObj = {}
+for (const log of projectsLogs) {
+  for (const item of log) {
+    const project = item.project
+    const day = dayjs(item.timestamp * 1000).format('YYYY-MM-DD')
+    const k1 = [0, 1].includes(style) ? project : day
+    const k2 = [0, 1].includes(style) ? day : project
+    if (!logObj[k1]) {
+      logObj[k1] = {
+        text: k1,
+        logs: {},
+      }
     }
+    if (!logObj[k1]['logs'][k2]) {
+      logObj[k1]['logs'][k2] = []
+    }
+    logObj[k1]['logs'][k2].push(item)
   }
-  allData = { ...dateLog }
 }
 
-
-const result = pug.renderFile(`./src/templates/_${style}${markdown ? '.md' : ''}.pug`, { allData })
+let result = ''
+const dealMd = (text, s = '#') => {
+  return markdown ? s + text : text
+}
+Object.values(logObj).forEach(({ text, logs }) => {
+  result += `${dealMd(text, '#')}\n`
+  Object.keys(logs).forEach((key) => {
+    if (style === 1 || style === 2) {
+      result += `${dealMd(key, '##')}\n`
+    }
+    let i = 1
+    const children = logs[key]
+    for (const log of children) {
+      if (style === 0) {
+        // 日期：描述
+        result += `${dayjs(log.timestamp * 1000).format('YYYY-MM-DD')}：${log.text}\n`
+      } else if (style === 3) {
+        // 时间：项目：描述
+        result += `${dayjs(log.timestamp * 1000).format('HH:mm')} (${log.project}) ：${log.text}\n`
+      } else {
+        result += `${i}. ${log.text}\n`
+        i++
+      }
+    }
+  })
+  result += '\n\n'
+})
 
 Print.newLine()
-console.log(allData)
-console.log(result)
-if (copy) {
-  clipboard.writeSync(result)
+if (result) {
+  console.log(`\n\n${result}\n\n`)
+  if (copy) {
+    clipboard.writeSync(result)
+  }
+} else {
+  console.log('没有查询到Git提交记录')
 }
