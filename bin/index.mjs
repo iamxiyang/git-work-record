@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import 'zx/globals'
 import { exit } from 'process'
 import yargs from 'yargs/yargs'
@@ -7,7 +8,7 @@ import clipboard from 'clipboardy'
 import dayjs from 'dayjs'
 import updateNotifier from 'update-notifier'
 
-// 禁用zx自动打印的log
+// 指定详细程度，改成false禁用zx自动打印的log
 $.verbose = false
 
 // 解析参数
@@ -48,6 +49,11 @@ const argv = yargs(hideBin(process.argv))
   .options('deep', {
     default: 3,
     describe: '递归查询的目录层级，越多性能越差，一般默认3即可',
+  })
+  .options('debug', {
+    default: false,
+    boolean: true,
+    describe: 'debug模式，会在每一步都打印日志',
   }).argv
 
 const grep = argv.grep
@@ -56,6 +62,14 @@ const style = argv.style
 const markdown = argv.markdown
 const copy = argv.copy
 const deep = argv.deep
+const debug = argv.debug
+
+// debug
+const debugLog = (...args) => {
+  if (debug) {
+    console.log(chalk.blue('INFO:'), ...args)
+  }
+}
 
 // 检测升级
 const pkg = await fs.readJson(path.dirname(argv.$0) + '/../package.json')
@@ -84,23 +98,47 @@ for (let i = 0, len = GitProjects.length; i < len; i++) {
   try {
     await within(async () => {
       //  单行打印进度
-      Print.line(`当前进度 ${Math.max((i / len) * 100 - 1, 1).toFixed(2)}%`)
+      !debug && Print.line(`当前进度 ${Math.max((i / len) * 100 - 1, 1).toFixed(2)}%`)
+
       // 进入目录
       const path = p.replace(/\/.git\/HEAD$/, '')
       cd(path)
+      debugLog(`进入目录：${path}`)
+
       // 默认提交作者
       const author = argv.author || (argv.committer ? '' : await $`git config user.name`).stdout.trim()
       const committer = argv.committer
+
+      debugLog(`使用author：${author}`)
+      debugLog(`使用committer：${committer}`)
+
       // 查询提交记录
-      // 写成 _'_ 纯粹是因为我直接写双引号不行，所以写个字符后面再替换，方便解析成json，后面看怎么优化
-      const pLog = (await $`git log --grep=${grep} --since=${since} --author=${author} --committer=${committer} --pretty=format:"{_'_text_'_:_'_%s_'_,_'_hash_'_:_'_%h_'_,_'_author_'_:_'_%an_'_,_'_timestamp_'_:%ct}" `).stdout
+
+      // NOTE:
+      // 1. zx执行时如果包含动态参数，会自动添加$'' 符号转义，官方说法是为了安全、转义后在bash 中也是合法的语法，因此不准备去掉这个限制。
+      // 2. 因为zx的这个特殊操作，动态变量不需要外层添加引号，而且某些情况下可能影响使用。看社区讨论可以通过 $.quote 暂时去掉限制。
+      // 3. 下面的 _'_ 其实就是 " ，为什么不直接写成双引号，因为测试时有问题，暂时写成这种不太可能重复的字符，后面再替换回来，是为了方便的处理成json。
+
+      // https://github.com/google/zx/blob/main/docs/quotes.md
+      // https://github.com/google/zx/issues/144#issuecomment-859745076
+      // https://github.com/google/zx/blob/18f64bc2a791ddbf3626217ba9412c06efb9279b/index.mjs#L240
+
+      const flags = [`--grep=${grep}`, `--since=${since}`, `--author=${author}`, `--committer=${committer}`, `--pretty=format:"{_'_text_'_:_'_%s_'_,_'_hash_'_:_'_%h_'_,_'_author_'_:_'_%an_'_,_'_timestamp_'_:%ct}"`]
+
+      const q = $.quote
+      $.quote = (v) => v
+      const pLog = (await $`git log ${flags}`).stdout
+      $.quote = q
+
+      debugLog(`pLogShell：git log ${flags.join(' ')}`)
+      debugLog(`pLog结果：${pLog}`)
+
       // 添加到日志
       const project = path.split('/').pop()
       if (pLog) {
         projectsLogs.push(
           pLog
             .replace(/_'_/gm, '"')
-            .replace(/\$'({.+?})'/gm, '$1')
             .split('\n')
             .map((line) => {
               return { ...JSON.parse(line), project }
@@ -113,7 +151,7 @@ for (let i = 0, len = GitProjects.length; i < len; i++) {
   }
 }
 
-Print.line(`当前进度 100%，查询完成`)
+!debug && Print.line(`当前进度 100%，查询完成`)
 
 // 按项目、按时间进行合并，显示特定格式效果
 
@@ -162,12 +200,12 @@ Object.values(logObj).forEach(({ text, logs }) => {
       }
     }
   })
-  result += '\n\n'
+  result += '\n'
 })
 
 Print.newLine()
 if (result) {
-  console.log(`\n\n${result}\n\n`)
+  console.log(`\n${result}\n`)
   if (copy) {
     clipboard.writeSync(result)
   }

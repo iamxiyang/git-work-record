@@ -3,10 +3,8 @@
   "version": "1.0.0",
   "description": "根据Git提交记录来写日报、周报等",
   "bin": {
-    "git-work-record": "./src/index.mjs",
-    "git-wr": "./src/index.mjs",
-    "git-rb": "./src/index.mjs",
-    "git-zb": "./src/index.mjs"
+    "git-work-record": "./bin/index.mjs",
+    "git-wr": "./bin/index.mjs"
   },
   "scripts": {
     "release": "bumpp --commit --push --tag"
@@ -18,6 +16,17 @@
   ],
   "author": "何喜阳",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iamxiyang/git-work-record.git"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/iamxiyang/git-work-record/issues"
+  },
+  "homepage": "https://github.com/iamxiyang/git-work-record#readme",
   "dependencies": {
     "clipboardy": "^3.0.0",
     "dayjs": "^1.11.3",
