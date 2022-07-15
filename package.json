@@ -1,6 +1,6 @@
 {
   "name": "git-work-record",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "根据Git提交记录来写日报、周报等",
   "bin": {
     "git-work-record": "./bin/index.mjs",
