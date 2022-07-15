@@ -5,6 +5,9 @@
 ## 安装
 
 ```shell
+# pnpm
+pnpm add -g git-work-record
+# npm
 npm install -g git-work-record
 ```
 
