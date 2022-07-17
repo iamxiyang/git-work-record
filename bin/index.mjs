@@ -185,7 +185,6 @@ Object.values(logObj).forEach(({ text, logs }) => {
     if (style === 1 || style === 2) {
       result += `${dealMd(key, '##')}\n`
     }
-    let i = 1
     const children = logs[key]
     for (const log of children) {
       if (style === 0) {
@@ -195,8 +194,7 @@ Object.values(logObj).forEach(({ text, logs }) => {
         // 时间：项目：描述
         result += `${dayjs(log.timestamp * 1000).format('HH:mm')} (${log.project}) ：${log.text}\n`
       } else {
-        result += `${i}. ${log.text}\n`
-        i++
+        result += `${log.text}\n`
       }
     }
   })
