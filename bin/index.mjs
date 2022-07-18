@@ -7,29 +7,40 @@ import Print from 'one-line-print'
 import clipboard from 'clipboardy'
 import dayjs from 'dayjs'
 import updateNotifier from 'update-notifier'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // 指定详细程度，改成false禁用zx自动打印的log
 $.verbose = false
 
+// 检测升级
+const pkg = await fs.readJson(__dirname + '/../package.json')
+updateNotifier({ pkg }).notify({ isGlobal: true })
+
 // 解析参数
 const argv = yargs(hideBin(process.argv))
+  .help()
+  .alias('help', 'h')
+  .version(pkg.version)
   .options('author', {
     default: '',
-    describe: '查询特定作者的提交记录，默认是所在项目中配置的user.name，如果传了committer则该项默认值为空',
+    describe: '查询特定作者的提交记录',
   })
   .options('committer', {
     default: '',
-    describe: '查询特定提交者的提交记录，默认为空',
+    describe: '查询特定提交者的提交记录',
   })
   .options('grep', {
     default: '',
-    describe: '提交说明包含字符串，等于git log --grep ',
+    describe: '提交说明需要包含字符串',
   })
   .options('since', {
     alias: 'day',
     default: 1,
-    // 1days 表示展示1天前的提交历史，具体的时间取值，格式： ?days , ?weeks , ?years, 2016-11-25
-    describe: '查询特定时间的提交记录，如果传递是是Number类型，会被当作days，其他的会直接传递给git log',
+    // 1days 表示展示1天前的提交历史，具体的时间取值，格式： ?days , ?weeks , ?years, 2016-11-25，如果是number则表示?days
+    describe: '查询特定时间段的提交记录',
   })
   .options('style', {
     default: 0,
@@ -48,12 +59,12 @@ const argv = yargs(hideBin(process.argv))
   })
   .options('deep', {
     default: 3,
-    describe: '递归查询的目录层级，越多性能越差，一般默认3即可',
+    describe: '需要递归查询的目录层级',
   })
   .options('debug', {
     default: false,
     boolean: true,
-    describe: 'debug模式，会在每一步都打印日志',
+    describe: '是否开启debug模式',
   }).argv
 
 const grep = argv.grep
@@ -71,10 +82,6 @@ const debugLog = (...args) => {
   }
 }
 
-// 检测升级
-const pkg = await fs.readJson(path.dirname(argv.$0) + '/../package.json')
-updateNotifier({ pkg }).notify({ isGlobal: true })
-
 // 查询提交记录
 const projectsLogs = []
 
@@ -84,7 +91,7 @@ const GitProjects = await glob(['**/.git/HEAD'], {
   markDirectories: true,
   deep,
   // 排除一些不可能的目录，减少查询和不必要的错误
-  ignore: ['**/System Volume Information/**', '**/Thumbs.db/**', '**/node_modules/**', '**/dist/**', '**/build/**'],
+  ignore: ['**/System Volume Information/**', '**/Thumbs.db/**', '**/node_modules/**', '**/dist/**', '**/build/**', '**/bin/**', '**/test/**', '**/docs/**', '**/example/**'],
 })
 
 if (!GitProjects.length) {
