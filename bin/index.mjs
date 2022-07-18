@@ -61,6 +61,11 @@ const argv = yargs(hideBin(process.argv))
     default: 3,
     describe: '需要递归查询的目录层级',
   })
+  .options('reverse', {
+    default: false,
+    boolean: true,
+    describe: '是否倒序查询Git提交记录',
+  })
   .options('debug', {
     default: false,
     boolean: true,
@@ -73,6 +78,7 @@ const style = argv.style
 const markdown = argv.markdown
 const copy = argv.copy
 const deep = argv.deep
+const reverse = argv.reverse
 const debug = argv.debug
 
 // debug
@@ -132,6 +138,9 @@ for (let i = 0, len = GitProjects.length; i < len; i++) {
 
       const flags = [`--grep=${grep}`, `--since=${since}`, `--author=${author}`, `--committer=${committer}`, `--pretty=format:"{_'_text_'_:_'_%s_'_,_'_hash_'_:_'_%h_'_,_'_author_'_:_'_%an_'_,_'_timestamp_'_:%ct}"`]
 
+      if (reverse) {
+        flags.push('--reverse')
+      }
       const q = $.quote
       $.quote = (v) => v
       const pLog = (await $`git log ${flags}`).stdout
