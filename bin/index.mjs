@@ -138,6 +138,8 @@ for (let i = 0, len = GitProjects.length; i < len; i++) {
       if (pLog) {
         projectsLogs.push(
           pLog
+            // 描述内容的双引号替换为单引号，避免JSON.parse出错
+            .replaceAll('"', "'")
             .replace(/_'_/gm, '"')
             .split('\n')
             .map((line) => {
