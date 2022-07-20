@@ -3,10 +3,10 @@
 根据Git提交记录来写日报、周报、月报。
 
 <div>
-  <img src="https://img.shields.io/npm/v/git-work-record"  style="flat-square" alt="version">
-  <img src="https://img.shields.io/github/stars/iamxiyang/git-work-record" alt="stars">
-  <img src="https://img.shields.io/github/issues/iamxiyang/git-work-record" alt="issues">
-  <img src="https://img.shields.io/npm/l/git-work-record" alt="licence">
+  <img src="https://img.shields.io/npm/v/git-work-record?style=for-the-badge" alt="version">
+  <img src="https://img.shields.io/github/stars/iamxiyang/git-work-record?style=for-the-badge" alt="stars">
+  <img src="https://img.shields.io/github/issues/iamxiyang/git-work-record?style=for-the-badge" alt="issues">
+  <img src="https://img.shields.io/npm/l/git-work-record?style=for-the-badge" alt="licence">
 </div>
 
 ## 安装
