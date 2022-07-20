@@ -136,7 +136,7 @@ for (let i = 0, len = GitProjects.length; i < len; i++) {
       // https://github.com/google/zx/issues/144#issuecomment-859745076
       // https://github.com/google/zx/blob/18f64bc2a791ddbf3626217ba9412c06efb9279b/index.mjs#L240
 
-      const flags = [`--grep=${grep}`, `--since=${since}`, `--author=${author}`, `--committer=${committer}`, `--pretty=format:"{_'_text_'_:_'_%s_'_,_'_hash_'_:_'_%h_'_,_'_author_'_:_'_%an_'_,_'_timestamp_'_:%ct}"`]
+      const flags = [`--grep=${grep}`, `--since=${since}`, `--author=${author}`, `--committer=${committer}`, `--pretty=format:"{_'_text_'_:_'_%s_'_,_'_hash_'_:_'_%h_'_,_'_author_'_:_'_%an_'_,_'_timestamp_'_:%ct}"`, `--all`]
 
       if (reverse) {
         flags.push('--reverse')
