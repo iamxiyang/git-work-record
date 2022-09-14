@@ -193,7 +193,7 @@ for (let i = 0, len = GitProjects.length; i < len; i++) {
 
 // 按项目、按时间进行合并，显示特定格式效果
 
-const logObj = {};
+let logObj = {};
 for (const log of projectsLogs) {
 	for (const item of log) {
 		const project = item.project;
@@ -210,6 +210,18 @@ for (const log of projectsLogs) {
 			logObj[k1]["logs"][k2] = [];
 		}
 		logObj[k1]["logs"][k2].push(item);
+	}
+	// k1是day时，根据时间进行排列
+	if (![0, 1].includes(style)) {
+		const _temp = {};
+		const dayArr = Object.keys(logObj).sort();
+		if (!reverse) {
+			dayArr.reverse();
+		}
+		dayArr.forEach((key) => {
+			_temp[key] = logObj[key];
+		});
+		logObj = _temp;
 	}
 }
 
