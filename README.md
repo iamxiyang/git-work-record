@@ -71,4 +71,4 @@ main();
 
 打赏需要支付宝、微信支付。如果你没有这两种支付方式，你可以给一个免费的 Star。
 
-![打赏作者](https://test-1309419893.cos.ap-shanghai.myqcloud.com/%E6%89%93%E8%B5%8F.jpg)
+![打赏作者](https://test-1309419893.cos.ap-shanghai.myqcloud.com/%E6%89%93%E8%B5%8F.png)
