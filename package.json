@@ -1,6 +1,6 @@
 {
 	"name": "git-work-record",
-	"version": "2.0.0.beta2",
+	"version": "2.0.0-beta.3",
 	"description": "根据 Git 提交记录来写日报、周报、月报。 Submit records through Git to write daily, weekly and monthly reports.",
 	"bin": {
 		"git-wr": "./bin/index.mjs",
