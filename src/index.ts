@@ -85,6 +85,8 @@ const main = async (options: Config = {}, isCli = false) => {
 	if (!isCli) {
 		return logs;
 	}
+	
+	log("==查询完成，以下是结果==");
 
 	const text = formatGitLog(logs);
 	log(text);
