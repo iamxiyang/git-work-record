@@ -97,11 +97,13 @@ export const findGitLog = async (options: FindGitLogOptions) => {
 						.split("\n")
 						.map((line: string) => ({ ...JSON.parse(line), project }))
 						.filter(({ timestamp, text }, _index, arr: GitOutput[]) => {
+							if (arr.length === 1) return true;
 							// // 过滤内容（ 参数传递的、重复的（必须是连续提交的重复信息才过滤）  ）
-							const last = arr.at(-1) || { text: "", timestamp: 0 };
+							const last = arr[_index - 1] || { text: "", timestamp: 0 };
 							if (search && !text.includes(search)) return false;
 							return !(
-								Math.abs(last.timestamp - timestamp) < 60 && last.text === text
+								Math.abs(last.timestamp - timestamp) < 60 * 60 &&
+								last.text === text
 							);
 						});
 					projectsLogs.push(...logArr);
