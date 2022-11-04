@@ -72,4 +72,4 @@ If you think this project has helped you, you can buy the author a glass of juic
 
 Reward needs Alipay and WeChat Pay. If you don't have these two payment methods, you can give a free Star.
 
-![Reward the author](https://test-1309419893.cos.ap-shanghai.myqcloud.com/%E6%89%93%E8%B5%8F.png)
+![Reward the author](https://test-1309419893.cos.ap-shanghai.myqcloud.com/%E6%89%93%E8%B5%8F.png?f=github)
