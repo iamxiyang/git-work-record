@@ -15,9 +15,10 @@ Submit records through Git to write daily, weekly and monthly reports.
 
 > If you have used v1.x before, please note that v2 has the following changes compared with v1：
 
-1. Discarded parameters `style`, `markdown，Can` be realized by programming。
-1. `grep` was renamed to search and looked up through JS instead。
-1. The implementation of the parameter `reverse` is changed to sort the content through JS。
+1. Discarded parameters `style`, `markdown，Can` be realized by programming.
+1. `grep` was renamed to search and looked up through JS instead.
+1. The implementation of the parameter `reverse` is changed to sort the content through JS.
+1. If the information submitted continuously over a period of time is consistent, the output will be deduplicated.
 
 ## Installation
 
