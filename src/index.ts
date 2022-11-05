@@ -70,7 +70,7 @@ const main = async (options: Config = {}, isCli = false) => {
 	}
 
 	const changeEvent = (process: number) => {
-		progress.update(process);
+		progress.update(Math.floor(process));
 	};
 
 	const logs = await findGitLog({ ...config, paths, changeEvent });
