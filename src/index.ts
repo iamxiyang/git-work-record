@@ -1,4 +1,5 @@
 import "zx/globals";
+import dayjs from "dayjs";
 import cliProgress from "cli-progress";
 import { checkUpdate, parseArgv } from "./cli";
 import { formatGitLog } from "./format";
@@ -85,8 +86,8 @@ const main = async (options: Config = {}, isCli = false) => {
 	if (!isCli) {
 		return logs;
 	}
-	
-	log("==查询完成，以下是结果==");
+	const now = dayjs().format("YYYY-MM-DD HH:mm:ss");
+	log(`== ${now} 查询完成，以下是结果 ==`);
 
 	const text = formatGitLog(logs);
 	log(text);

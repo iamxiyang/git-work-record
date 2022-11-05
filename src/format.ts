@@ -4,7 +4,7 @@ import { GitOutput } from "./types";
 // 格式化内容
 /* 
 格式：
-  日期
+  日期 星期几
    项目名
     描述
 */
@@ -13,6 +13,12 @@ interface logObj {
 		[key: string]: GitOutput[];
 	};
 }
+
+const weekToText = (week: number | string) => {
+	const arr = ["天", "一", "二", "三", "四", "五", "六"];
+	return "星期" + arr[Number(week)];
+};
+
 export const formatGitLog = (projectsLogs: GitOutput[] = []) => {
 	const logObj: logObj = {};
 	for (const log of projectsLogs) {
@@ -32,7 +38,7 @@ export const formatGitLog = (projectsLogs: GitOutput[] = []) => {
 	for (const [day, projects] of Object.entries<{ [key: string]: GitOutput[] }>(
 		logObj,
 	)) {
-		result += `${day}\n`;
+		result += `\n${day} ${weekToText(dayjs(day).format("d"))}\n`;
 		for (const [project, list] of Object.entries(projects)) {
 			result += `${project}\n`;
 			list.forEach(({ text }) => {
