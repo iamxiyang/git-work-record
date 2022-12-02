@@ -1,41 +1,62 @@
 {
-  "name": "git-work-record",
-  "version": "1.2.0",
-  "description": "根据Git提交记录来写日报、周报等",
-  "bin": {
-    "git-work-record": "./bin/index.mjs",
-    "git-wr": "./bin/index.mjs"
-  },
-  "scripts": {
-    "release": "bumpp --commit --push --tag"
-  },
-  "keywords": [
-    "Git",
-    "日报",
-    "周报"
-  ],
-  "author": "何喜阳",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/iamxiyang/git-work-record.git"
-  },
-  "engines": {
-    "node": ">=16.0.0"
-  },
-  "bugs": {
-    "url": "https://github.com/iamxiyang/git-work-record/issues"
-  },
-  "homepage": "https://github.com/iamxiyang/git-work-record#readme",
-  "dependencies": {
-    "clipboardy": "^3.0.0",
-    "dayjs": "^1.11.3",
-    "one-line-print": "^1.0.0",
-    "update-notifier": "^6.0.2",
-    "yargs": "^17.5.1",
-    "zx": "^7.0.7"
-  },
-  "devDependencies": {
-    "bumpp": "^8.2.1"
-  }
+	"name": "git-work-record",
+	"version": "2.0.0-beta.7",
+	"description": "根据 Git 提交记录来写日报、周报、月报。 Submit records through Git to write daily, weekly and monthly reports.",
+	"bin": {
+		"git-wr": "./bin/index.mjs",
+		"git-work-record": "./bin/index.mjs"
+	},
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"main": "./dist/index.cjs",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "unbuild",
+		"stub": "unbuild --stub",
+		"release": "bumpp --commit --push --tag"
+	},
+	"keywords": [
+		"Git",
+		"日报",
+		"周报"
+	],
+	"author": "hexiyang",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/iamxiyang/git-work-record.git"
+	},
+	"engines": {
+		"node": ">=16.0.0"
+	},
+	"bugs": {
+		"url": "https://github.com/iamxiyang/git-work-record/issues"
+	},
+	"homepage": "https://github.com/iamxiyang/git-work-record#readme",
+	"dependencies": {
+		"chalk": "^5.1.2",
+		"cli-progress": "^3.11.2",
+		"clipboardy": "^3.0.0",
+		"dayjs": "^1.11.6",
+		"update-notifier": "^6.0.2",
+		"yargs": "^17.6.0",
+		"zx": "7.0.7"
+	},
+	"devDependencies": {
+		"@types/cli-progress": "^3.11.0",
+		"@types/node": "*",
+		"@types/update-notifier": "^6.0.1",
+		"@types/yargs": "^17.0.13",
+		"bumpp": "^8.2.1",
+		"typescript": "^4.8.4",
+		"unbuild": "^0.8.11"
+	}
 }
