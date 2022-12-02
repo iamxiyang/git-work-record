@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@types/cli-progress': ^3.11.0
-  '@types/node': ^18.11.7
+  '@types/node': '*'
   '@types/update-notifier': ^6.0.1
   '@types/yargs': ^17.0.13
   bumpp: ^8.2.1
@@ -14,7 +14,7 @@ specifiers:
   unbuild: ^0.8.11
   update-notifier: ^6.0.2
   yargs: ^17.6.0
-  zx: ^7.1.1
+  zx: 7.0.7
 
 dependencies:
   chalk: 5.1.2
@@ -23,7 +23,7 @@ dependencies:
   dayjs: 1.11.6
   update-notifier: 6.0.2
   yargs: 17.6.0
-  zx: 7.1.1
+  zx: 7.0.7
 
 devDependencies:
   '@types/cli-progress': 3.11.0
@@ -472,6 +472,10 @@ packages:
 
   /@types/minimist/1.2.2:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
+    dev: false
+
+  /@types/node/17.0.45:
+    resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
     dev: false
 
   /@types/node/18.11.7:
@@ -2405,14 +2409,14 @@ packages:
       yargs-parser: 21.1.1
     dev: false
 
-  /zx/7.1.1:
-    resolution: {integrity: sha512-5YlTO2AJ+Ku2YuZKSSSqnUKuagcM/f/j4LmHs15O84Ch80Z9gzR09ZK3gR7GV+rc8IFpz2H/XNFtFVmj31yrZA==}
+  /zx/7.0.7:
+    resolution: {integrity: sha512-cWF5cWqqrTVxgEPmQ8w/LvUXOK3rJTdgC+Tt1nz113+YncNIO0X6UXgCY72UfE8Az/lwOubbEJARXpQ+7RiM9g==}
     engines: {node: '>= 16.0.0'}
     hasBin: true
     dependencies:
       '@types/fs-extra': 9.0.13
       '@types/minimist': 1.2.2
-      '@types/node': 18.11.7
+      '@types/node': 17.0.45
       '@types/ps-tree': 1.1.2
       '@types/which': 2.0.1
       chalk: 5.1.2
