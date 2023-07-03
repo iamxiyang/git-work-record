@@ -74,7 +74,7 @@ const main = async (options: Config = {}, isCli = false) => {
 		progress.update(Math.floor(process));
 	};
 
-	const logs = await findGitLog({ ...config, paths, changeEvent });
+	const { logs, errors } = await findGitLog({ ...config, paths, changeEvent });
 	progress.update(100);
 	progress.stop();
 
@@ -92,6 +92,13 @@ const main = async (options: Config = {}, isCli = false) => {
 	const text = formatGitLog(logs);
 	log(text);
 	config.copy && copy(text);
+
+	if (errors.length) {
+		info(
+			`警告，本次查询没有指定author或committer，同时Git全局配置中缺少user.name、以下Git项目本地配置中也缺少user.name，本次查询以下项目被忽略：`,
+		);
+		info(errors.join("\n"));
+	}
 };
 
 export default main;

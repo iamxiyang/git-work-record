@@ -1,6 +1,6 @@
 // 查询git项目、查询git项目日志
 import "zx/globals";
-import { log, error } from "./utils";
+import { log, error, info } from "./utils";
 import { FindGitLogOptions, GitOutput } from "./types";
 
 // 查询当前目录及其子目录存在 .git 的目录
@@ -34,6 +34,7 @@ export const findGitProject = async ({ deep = 3, cwd = "" }) => {
 export const findGitLog = async (options: FindGitLogOptions) => {
 	const { since, search, paths = [], changeEvent, debug, reverse } = options;
 	const projectsLogs: GitOutput[] = [];
+	const errorProjects: string[] = [];
 
 	for (let i = 0, len = paths.length; i < len; i++) {
 		const p = paths[i];
@@ -53,7 +54,14 @@ export const findGitLog = async (options: FindGitLogOptions) => {
 				const committer = options.committer;
 
 				if (!author && !options.committer) {
-					author = (await $`git config user.name`).stdout.trim();
+					try {
+						author = (await $`git config user.name`).stdout?.trim();
+					} catch (err: any) {
+						if (err.exitCode && !err.stdout) {
+							errorProjects.push(path);
+							return;
+						}
+					}
 				}
 
 				debug && log(`使用author：${author}`);
@@ -98,7 +106,7 @@ export const findGitLog = async (options: FindGitLogOptions) => {
 						.map((line: string) => ({ ...JSON.parse(line), project }))
 						.filter(({ timestamp, text }, _index, arr: GitOutput[]) => {
 							if (arr.length === 1) return true;
-							// // 过滤内容（ 参数传递的、重复的（必须是连续提交的重复信息才过滤）  ）
+							// 过滤内容（ 参数传递的、重复的（必须是连续提交的重复信息才过滤）  ）
 							const last = arr[_index - 1] || { text: "", timestamp: 0 };
 							if (search && !text.includes(search)) return false;
 							return !(
@@ -110,12 +118,15 @@ export const findGitLog = async (options: FindGitLogOptions) => {
 				}
 			});
 		} catch (err) {
-			error(err);
+			error(err, p);
 		}
 	}
 
-	// 根据时间进行排序，正序 倒序
-	return projectsLogs.sort((a, b) =>
-		reverse ? b.timestamp - a.timestamp : a.timestamp - b.timestamp,
-	);
+	return {
+		errors: errorProjects,
+		// 根据时间进行排序，正序 倒序
+		logs: projectsLogs.sort((a, b) =>
+			reverse ? b.timestamp - a.timestamp : a.timestamp - b.timestamp,
+		),
+	};
 };
