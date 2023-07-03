@@ -42,6 +42,7 @@
 	},
 	"homepage": "https://github.com/iamxiyang/git-work-record#readme",
 	"dependencies": {
+		"@iamxiyang/env-checker": "0.1.0-beta.1",
 		"chalk": "^5.1.2",
 		"cli-progress": "^3.11.2",
 		"clipboardy": "^3.0.0",
