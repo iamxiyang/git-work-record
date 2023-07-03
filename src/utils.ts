@@ -10,7 +10,7 @@ export const log = (...text: unknown[]) => {
 };
 
 export const info = (...text: unknown[]) => {
-	console.info(chalk.blue(text));
+	console.info(chalk.yellow(text));
 };
 
 export const error = (...text: unknown[]) => {
